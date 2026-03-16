@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import History from "../components/History"
+import MovieCard from "../components/MovieCard"
 
-export default function Home(){
+export default function Home({children}){
     const [search, setSearch] = useState()
     const storedHistory = localStorage.getItem("search")
     const [focused, setFocused] = useState(false)
@@ -51,6 +52,9 @@ export default function Home(){
             </label>
             {focused ? <History history={history} setSearch={setSearch} />:null}
             <button onClick={getMovies}>Søk</button>
+            <section>
+                {history?.map((char)=> <MovieCard key={char.id} char={char} children={children} />)}
+            </section>
         </form>
     </main>
         
