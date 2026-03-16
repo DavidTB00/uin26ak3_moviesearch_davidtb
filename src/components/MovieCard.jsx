@@ -1,5 +1,5 @@
 export default function MovieCard({char}){
-    const{Poster,Title, Year} = char
+    const {Poster,Title, Year} = char
     return(
         <article>
             <h3>{Title}</h3>

@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Movie from './pages/Movie'
 import Layout from './components/Layout'
 
+
 function App() {
   
 
