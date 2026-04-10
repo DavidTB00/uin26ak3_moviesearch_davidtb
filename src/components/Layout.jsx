@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
+
 export default function Layout({children}){
-    return(
+    return (
         <>
         <nav>
-            <Link to="/">Hjem</Link>
-            <Link to="Movie">filmer</Link>
+        <Link to="/">Hjem</Link>
         </nav>
         {children}
         </>
     )
 }
+{/*Hentet fra Code-along workshop notatene */}

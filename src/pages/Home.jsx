@@ -1,62 +1,67 @@
-import { useEffect, useState } from "react"
-import History from "../components/History"
-import MovieCard from "../components/MovieCard"
+//Notater fra Ann-Charlott sin time der henne ga oss litt gratis, Tatt mye fra Rick and Morty notatene og hjelp fra studenter og en venn.
+import { useState, useEffect } from 'react'
+import History from '../components/History'
+import MovieCard from '../components/MovieCard'
 
-export default function Home({children}){
-    const [search, setSearch] = useState()
-    const storedHistory = localStorage.getItem("search")
-    const [focused, setFocused] = useState(false)
+export default function Home() {
+    const [search, setSearch] = useState("")
+    const [movies, setMovies]  = useState([])
+    const storedHistory = localStorage.getItem("history")
+    const [focused, setFocused] = useState(false) 
+    const [error, setFail] = useState("")
     const [history, setHistory] = useState(storedHistory ? JSON.parse(storedHistory) : [])
-
-    console.log("Denne kommer fra storage", storedHistory)
-
-    const baseUrl = `http://www.omdbapi.com/?s=${search}&apikey=`
+    const baseUrl = `https://www.omdbapi.com/?apikey=`
     //gjør sånn
-    const apiKey = import.meta.env.VITE_APP_API_KEY
+    const apiKey = import.meta.env.VITE_APP_API_KEY 
 
-    useEffect(()=>{
-        localStorage.setItem("search", JSON.stringify(history))
-    },[history])
+    useEffect(() => { localStorage.setItem("history", JSON.stringify (history)) })
+    useEffect(() => {getMovies("James Bond")}, [])
 
-    const getMovies = async()=>{
-        try
-        {
-            const response = await fetch(`${baseUrl}${apiKey}`)
+    
+    const getMovies = async (search) => {
+        try {
+            const response = await fetch(`${baseUrl}${apiKey}&s=${search}`)
             const data = await response.json()
-            console.log(data)
+            setMovies(data.Search)
         }
-        catch(err){
-            console.error(err);
+        catch (err) {
+            console.error(err)
         }
-    }
+    }   
 
     const handleChange = (e)=>{
-        setSearch(e.target.value)
-    }
-
-    const handleSubmit = (e)=>{
+        const value = e.target.value
+        setSearch(value)
+            if (value.length >=3) {
+                setFail("")
+           } else {
+            setFail("Minimum 3 tegn for å søke")
+        }
+    }  
+    
+    const handleSubmit = (e) => {
         e.preventDefault()
-        e.target.reset()
-
-        setHistory((prev) => [...prev, search])
+            if (search.length < 3) {
+                setFail("Minimum 3 tegn for å søke")
+                    return
     }
-    console.log(history)
+        setFail("")
+        getMovies(search)
+        setHistory((prev) => [...prev, search])
+}
 
-    return(
+    return (
     <main>
         <h1>Forside</h1>
-        <form onSubmit={handleSubmit}>
-            <label>
-                Søk etter film:
-            <input type="search" placeholder="Harry Potter" onChange={handleChange} onFocus={()=> setFocused(true)} /*onBlur={()=>setFocused(false)}*/></input>
-            </label>
-            {focused ? <History history={history} setSearch={setSearch} />:null}
-            <button onClick={getMovies}>Søk</button>
-            <section>
-                {history?.map((char)=> <MovieCard key={char.id} char={char} children={children} />)}
-            </section>
+        <form onSubmit={handleSubmit}>Søk etter en film her<input type="search" placeholder="James Bond" onChange={handleChange} onFocus={()=> setFocused(true)} />
+            {error && <p>{error}</p>}
+            <button type="submit">Søk</button>
         </form>
+        {focused ? <History history={history} setSearch={setSearch} />:null}
+        <section>
+            {movies?.map(movie => (<MovieCard key={movie.imdbID} title={movie.Title} poster={movie.Poster} year={movie.Year}/>
+            ))}
+        </section>
     </main>
-        
     )
 }
